@@ -4,6 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use App\Http\Requests\CategoryRequest;
+use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Validator;
 
 class CategoryController extends Controller
 {
@@ -34,13 +38,14 @@ class CategoryController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(CategoryRequest $request)
     {
-        $category = Category::create($request->post());
+        $data = $request->validated();
+        $response = Category::create($data);
         return response()->json([
-            'message'=>'Category Created Successfully!!',
-            'category'=>$category
-        ]);
+            'status' => 'success',
+            'data' => $response
+        ],200);
     }
 
     /**
@@ -74,11 +79,28 @@ class CategoryController extends Controller
      */
     public function update(Request $request, Category $category)
     {
-        $category->fill($request->post())->save();
-        return response()->json([
-            'message'=>'Category Updated Successfully!!',
-            'category'=>$category
+        $validator =  Validator::make($request->all(), [
+            'title' => 'required | max:3',
+            'description' => 'required | max:3',
         ]);
+        if($validator->fails()) {
+            // return Redirect::back()->withErrors($validator);
+
+            Log::info($validator->errors());
+            // return response()->json($validator->errors());
+            return response()->json([
+                'errors' => $validator->errors(),
+            ],422);
+        }
+        else
+        {
+            $category->fill($request->post())->save();
+            return response()->json([
+                'status' => 'success',
+                'message'=>'Category Updated Successfully!!',
+                'data' => $category
+            ]);
+        }
     }
 
     /**

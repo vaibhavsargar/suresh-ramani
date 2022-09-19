@@ -1,6 +1,13 @@
 <template>
     <div class="row">
         <div class="col-12">
+            <div v-if="errors">
+                <div v-for="(v, k) in errors" :key="k" class="bg-danger text-white rounded font-bold mb-4 shadow-lg py-2 px-4 pr-0">
+                    <p v-for="error in v" :key="error" class="text-sm">
+                        {{error}}
+                    </p>
+                </div>
+            </div>
             <div class="card">
                 <div class="card-header">
                     <h4>Update Category</h4>
@@ -40,7 +47,8 @@ export default {
                 title:"",
                 description:"",
                 _method:"patch"
-            }
+            },
+            errors:{}
         }
     },
     mounted(){
@@ -58,9 +66,21 @@ export default {
         },
         async update(){
             await this.axios.post(`/api/category/${this.$route.params.id}`,this.category).then(response=>{
+                console.log(response.data);
+                this.$fire({
+                    title: "Updated",
+                    text: response.data.category,
+                    type: "success",
+                    timer: 3000
+                }).then(r => {
+                    console.log(r.value);
+                });
                 this.$router.push({name:"categoryList"})
             }).catch(error=>{
-                console.log(error)
+                if(error.response.status === 422){
+                    console.log(error.response.data.errors);
+                    this.errors = error.response.data.errors
+                }
             })
         }
     }

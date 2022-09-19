@@ -2,11 +2,13 @@
     <main>
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
             <div class="container-fluid">
-                <router-link to="/" class="navbar-brand" href="#">Laravel Vue Crud App - TechvBlogs</router-link>
+                <router-link to="/" class="navbar-brand" href="#">Laravel Vue Crud App - Sargar</router-link>
                 <div class="collapse navbar-collapse">
                     <div class="navbar-nav">
                         <router-link exact-active-class="active" to="/" class="nav-item nav-link">Home</router-link>
-                        <router-link exact-active-class="active" to="/category" class="nav-item nav-link">Category</router-link>
+                        <router-link exact-active-class="active" to="/category" class="nav-item nav-link">Category
+                        </router-link>
+                        <button @click="alert">Alert</button>
                     </div>
                 </div>
             </div>
@@ -18,5 +20,20 @@
 </template>
  
 <script>
-    export default {}
+export default {
+    name: 'alert',
+    methods: {
+        alert() {
+            this.$alert("Hello Vue Simple Alert.");
+            this.$fire({
+                title: "Title",
+                text: "text",
+                type: "success",
+                timer: 3000
+            }).then(r => {
+                console.log(r.value);
+            });
+        }
+    }
+}
 </script>
